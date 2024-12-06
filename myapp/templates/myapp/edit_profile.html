@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/styles.css' %}" />
+    <style>
+      .navbar-nav .nav-item .nav-link {
+        color: black;
+      }
+      .navbar-nav .nav-item .btn {
+        margin-left: 10px;
+      }
+      .form-container {
+        margin-top: 50px;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      .form-container h2 {
+        margin-bottom: 20px;
+      }
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .profile-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 20px;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+      .btn-secondary {
+        border-radius: 20px;
+      }
+      .btn-group {
+        display: flex;
+        justify-content: space-between;
+      }
+      .btn-space {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'home' %}"
+        >ChampSpace, by Abhiraj Ghose</a
+      >
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'add_job' %}">Add Job</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'employer_dashboard' %}"
+              >Employer Dashboard</a
+            >
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}" style="color: black"
+              >Profile</a
+            >
+          </li>
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="nav-link btn btn-secondary text-white"
+              >
+                Logout
+              </button>
+            </form>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'login_register' %}"
+              style="color: black"
+              >Profile</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-primary text-white"
+              href="{% url 'login_register' %}"
+              >Login / Register</a
+            >
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-secondary text-white ml-2"
+              href="{% url 'find_jobs' %}"
+              >Find Jobs</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="form-container">
+        <div class="profile-header">
+          <img
+            src="{% if user.profile.profile_pic %}{{ user.profile.profile_pic.url }}{% else %}{% static 'myapp/profile-pic.jpg' %}{% endif %}"
+            alt="Profile Picture"
+            class="profile-pic"
+          />
+          <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+        </div>
+        <h2 class="text-center">Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="id_first_name">First name:</label>
+            <input
+              type="text"
+              name="first_name"
+              maxlength="150"
+              required
+              id="id_first_name"
+              value="{{ user_form.first_name.value }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_last_name">Last name:</label>
+            <input
+              type="text"
+              name="last_name"
+              maxlength="150"
+              required
+              id="id_last_name"
+              value="{{ user_form.last_name.value }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_phone_number">Phone number:</label>
+            <input
+              type="text"
+              name="phone_number"
+              id="id_phone_number"
+              value="{{ profile_form.phone_number.value }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_address">Current Address:</label>
+            <input
+              type="text"
+              name="current_address"
+              id="id_current_address"
+              value="{{ profile_form.current_address.value }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_github">GitHub:</label>
+            <input
+              type="text"
+              name="github"
+              id="id_github"
+              value="{{ profile_form.github.value }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="id_linkedin">LinkedIn:</label>
+            <input
+              type="text"
+              name="linkedin"
+              id="id_linkedin"
+              value="{{ profile_form.linkedin.value }}"
+            />
+          </div>
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary btn-space">
+              Save Changes
+            </button>
+            <a href="{% url 'profile' %}" class="btn btn-secondary"
+              >Back to Profile</a
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

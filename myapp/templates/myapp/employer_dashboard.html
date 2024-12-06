@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employer Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/styles.css' %}" />
+
+    <style>
+      .navbar-nav .nav-item .nav-link {
+        color: black;
+      }
+      .navbar-nav .nav-item .btn {
+        margin-left: 10px;
+      }
+      .dashboard-container {
+        margin-top: 50px;
+        display: flex;
+      }
+      .sidebar {
+        width: 25%;
+        border-right: 1px solid #ddd;
+        padding-right: 20px;
+      }
+      .sidebar a {
+        display: block;
+        padding: 10px;
+        color: black;
+        text-decoration: none;
+      }
+      .sidebar a:hover {
+        background-color: #f0f0f0;
+      }
+      .content {
+        width: 75%;
+        padding-left: 20px;
+      }
+      .table {
+        margin-top: 20px;
+      }
+      .btn {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'home' %}"
+        >ChampSpace, by Abhiraj Ghose</a
+      >
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'add_job' %}">Add Job</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'employer_dashboard' %}"
+              >Employer Dashboard</a
+            >
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}" style="color: black"
+              >Profile</a
+            >
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'login_register' %}"
+              style="color: black"
+              >Profile</a
+            >
+          </li>
+          {% endif %} {% if user.is_authenticated %}
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="nav-link btn btn-secondary text-white"
+              >
+                Logout
+              </button>
+            </form>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-primary text-white"
+              href="{% url 'login_register' %}"
+              >Login / Register</a
+            >
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-secondary text-white"
+              href="{% url 'find_jobs' %}"
+              >Find Jobs</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container dashboard-container">
+      <div class="sidebar">
+        <h3>Abhiraj Ghose</h3>
+        <a href="#" onclick="showSection('job-listings')">Job Listings</a>
+        <a href="#" onclick="showSection('applications')">Applications</a>
+        <a href="{% url 'add_job' %}">Add New Job</a>
+        <a href="{% url 'profile' %}">Profile</a>
+      </div>
+      <div class="content" id="content">
+        <!-- Dynamic content will be loaded here -->
+      </div>
+    </div>
+
+    <script>
+      function showSection(sectionId) {
+        const contentDiv = document.getElementById("content");
+        contentDiv.innerHTML = "";
+
+        if (sectionId === "job-listings") {
+          contentDiv.innerHTML = `
+            <h2>Job Listings</h2>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Job Title</th>
+                  <th scope="col">Location</th>
+                  <th scope="col">Posted Date</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Senior Software Engineer</td>
+                  <td>San Francisco, CA</td>
+                  <td>01/01/2024</td>
+                  <td>
+                    <button class="btn btn-primary">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                    <button class="btn btn-secondary">View Applications</button>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Marketing Specialist</td>
+                  <td>New York, NY</td>
+                  <td>15/01/2024</td>
+                  <td>
+                    <button class="btn btn-primary">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                    <button class="btn btn-secondary">View Applications</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>`;
+        } else if (sectionId === "applications") {
+          contentDiv.innerHTML = `
+            <h2>Applications</h2>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Job Title</th>
+                  <th scope="col">Applicant Name</th>
+                  <th scope="col">Application Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Senior Software Engineer</td>
+                  <td>Jane Doe</td>
+                  <td>02/01/2024</td>
+                  <td>Under Review</td>
+                  <td>
+                    <button class="btn btn-primary">View</button>
+                    <button class="btn btn-secondary">Shortlist</button>
+                    <button class="btn btn-danger">Reject</button>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Marketing Specialist</td>
+                  <td>John Smith</td>
+                  <td>17/01/2024</td>
+                  <td>Interview Scheduled</td>
+                  <td>
+                    <button class="btn btn-primary">View</button>
+                    <button class="btn btn-secondary">Shortlist</button>
+                    <button class="btn btn-danger">Reject</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>`;
+        }
+      }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

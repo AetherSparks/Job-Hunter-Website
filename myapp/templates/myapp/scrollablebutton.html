@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scrollable Button System</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+      .scroll-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 200px;
+        height: 400px;
+        overflow: hidden;
+        position: relative;
+        cursor: grab;
+      }
+      .scroll-container button {
+        width: 100%;
+        margin: 5px 0;
+        transition: transform 0.3s, font-size 0.3s, opacity 0.3s;
+        font-size: 14px;
+        opacity: 0.7;
+        /* Initially hide all buttons */
+      }
+      .scroll-container button.center {
+        font-size: 18px;
+        opacity: 1;
+      }
+      .control-buttons {
+        display: none; /* Hide the scroll buttons */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scroll-container" id="scrollContainer">
+      <!-- Dynamically generating 15 buttons with duplication -->
+      <script>
+        const buttonCount = 10000;
+        for (let i = 1; i <= buttonCount; i++) {
+          document.write(`<button>Button ${(i % 15) + 1}</button>`);
+        }
+      </script>
+    </div>
+
+    <script>
+      const scrollContainer = document.getElementById("scrollContainer");
+      const buttons = Array.from(scrollContainer.querySelectorAll("button"));
+      let isDragging = false;
+      let startY;
+      let startScroll;
+
+      scrollContainer.addEventListener("mousedown", startDrag);
+      scrollContainer.addEventListener("touchstart", startDrag);
+
+      function startDrag(event) {
+        isDragging = true;
+        startY = event.pageY || event.touches[0].pageY;
+        startScroll = scrollContainer.scrollTop;
+        scrollContainer.style.cursor = "grabbing";
+
+        document.addEventListener("mousemove", drag);
+        document.addEventListener("touchmove", drag);
+        document.addEventListener("mouseup", endDrag);
+        document.addEventListener("touchend", endDrag);
+      }
+
+      function drag(event) {
+        if (!isDragging) return;
+        const currentY = event.pageY || event.touches[0].pageY;
+        const delta = currentY - startY;
+        scrollContainer.scrollTop = startScroll - delta;
+        updateButtonStyles();
+      }
+
+      function endDrag() {
+        isDragging = false;
+        scrollContainer.style.cursor = "grab";
+        document.removeEventListener("mousemove", drag);
+        document.removeEventListener("touchmove", drag);
+        document.removeEventListener("mouseup", endDrag);
+        document.removeEventListener("touchend", endDrag);
+      }
+
+      function updateButtonStyles() {
+        buttons.forEach((btn) => {
+          btn.classList.remove("center");
+        });
+
+        const scrollPosition = scrollContainer.scrollTop;
+        const buttonHeight = buttons[0].offsetHeight;
+        const centerIndex = Math.floor(scrollPosition / buttonHeight);
+
+        const startIndex = Math.max(centerIndex - 2, 0);
+        const endIndex = Math.min(centerIndex + 2, buttons.length - 1);
+
+        for (let i = startIndex; i <= endIndex; i++) {
+          buttons[i].style.display = "block";
+          if (i === centerIndex) {
+            buttons[i].classList.add("center");
+          }
+        }
+      }
+
+      // Initial update to set correct button visibility
+      updateButtonStyles();
+    </script>
+  </body>
+</html>
